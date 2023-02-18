@@ -179,10 +179,20 @@ public class PortfolioManagerApplication {
         LocalDate endDate = LocalDate.parse(date);
 
         for (PortfolioTrade trd : trade) {
-            double closingPrice = getClosingPriceOnEndDate(fetchCandles(trd, endDate, token));
-            double openingPrice = getOpeningPriceOnStartDate(fetchCandles(trd, endDate, token));
+            List<Candle> tempCandles = fetchCandles(trd, endDate, token);
+            double closingPrice = getClosingPriceOnEndDate(tempCandles);
+            double openingPrice = getOpeningPriceOnStartDate(tempCandles);
             annualizedReturnsList.add(calculateAnnualizedReturns(endDate, trd, openingPrice, closingPrice));
         }
+
+        Comparator<AnnualizedReturn> sortByReturns = new Comparator<AnnualizedReturn>() {
+              public int compare(AnnualizedReturn t1, AnnualizedReturn t2) {
+                  return t1.getAnnualizedReturn().compareTo(t2.getAnnualizedReturn());
+              }
+        };
+
+        Collections.sort(annualizedReturnsList, sortByReturns);
+        Collections.reverse(annualizedReturnsList);
 
         return annualizedReturnsList;
   }

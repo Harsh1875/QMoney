@@ -37,6 +37,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
     this.restTemplate = restTemplate;
   }
 
+
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
   LocalDate endDate) throws JsonProcessingException {
     List<AnnualizedReturn> annualizedReturns = new ArrayList<>();

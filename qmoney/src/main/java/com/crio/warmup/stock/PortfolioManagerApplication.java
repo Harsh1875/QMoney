@@ -21,6 +21,17 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.client.RestTemplate;
 
@@ -221,7 +232,7 @@ public class PortfolioManagerApplication {
        PortfolioTrade[] portfolioTrades = objectMapper.readValue(file, PortfolioTrade[].class);
 
        RestTemplate restTemplate = new RestTemplate();
-       PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager(restTemplate);
+       PortfolioManager portfolioManager = PortfolioManagerFactory.getPortfolioManager("", restTemplate);
        
        return portfolioManager.calculateAnnualizedReturn(Arrays.asList(portfolioTrades), endDate);
   }
@@ -231,14 +242,6 @@ public class PortfolioManagerApplication {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
 
-    printJsonObject(mainReadFile(args));
-    printJsonObject(mainReadQuotes(args));
-    printJsonObject(mainCalculateSingleReturn(args));
-
-
-
-
-    printJsonObject(mainCalculateReturnsAfterRefactor(args));
   }
 }
 

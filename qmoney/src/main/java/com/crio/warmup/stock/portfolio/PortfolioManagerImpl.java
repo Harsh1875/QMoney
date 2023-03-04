@@ -8,6 +8,7 @@ import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.crio.warmup.stock.quotes.StockQuotesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,9 @@ public class PortfolioManagerImpl implements PortfolioManager {
   private RestTemplate restTemplate;
 
   private StockQuotesService stockQuotesService;
+
+
+
   // Caution: Do not delete or modify the constructor, or else your build will break!
   // This is absolutely necessary for backward compatibility
   protected PortfolioManagerImpl(RestTemplate restTemplate) {
@@ -43,7 +47,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   public List<AnnualizedReturn> calculateAnnualizedReturn(List<PortfolioTrade> portfolioTrades,
-  LocalDate endDate) throws JsonProcessingException {
+  LocalDate endDate) throws JsonProcessingException, StockQuoteServiceException {
     List<AnnualizedReturn> annualizedReturns = new ArrayList<>();
 
     for (PortfolioTrade trade : portfolioTrades) {
@@ -79,30 +83,22 @@ private AnnualizedReturn getReturns(LocalDate endDate,PortfolioTrade trade, Doub
 
   //CHECKSTYLE:OFF
 
-
-
-
   private Comparator<AnnualizedReturn> getComparator() {
     return Comparator.comparing(AnnualizedReturn::getAnnualizedReturn).reversed();
   }
 
-  //CHECKSTYLE:OFF
-
-  // TODO: CRIO_TASK_MODULE_REFACTOR
-  //  Extract the logic to call Tiingo third-party APIs to a separate function.
-  //  Remember to fill out the buildUri function and use that.
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException {
-        //String uri = buildUri(symbol, from, to);
-        //return Arrays.asList(this.restTemplate.getForObject(uri, TiingoCandle[].class));
-        return stockQuotesService.getStockQuote(symbol, from, to);
+  throws JsonProcessingException, StockQuoteServiceException {
+    //String uri = buildUri(symbol, from, to);
+    //return Arrays.asList(this.restTemplate.getForObject(uri, TiingoCandle[].class));
+    return stockQuotesService.getStockQuote(symbol, from, to);
   }
 
   protected String buildUri(String symbol, LocalDate startDate, LocalDate endDate) {
 
-       String uriTemplate = "https:api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
-            + "startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
-        return uriTemplate;
+    String uriTemplate = "https:api.tiingo.com/tiingo/daily/$SYMBOL/prices?"
+        + "startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
+    return uriTemplate;
   }
 
 }

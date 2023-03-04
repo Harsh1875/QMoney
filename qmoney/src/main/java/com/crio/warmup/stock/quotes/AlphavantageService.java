@@ -6,6 +6,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import com.crio.warmup.stock.dto.AlphavantageCandle;
 import com.crio.warmup.stock.dto.AlphavantageDailyResponse;
 import com.crio.warmup.stock.dto.Candle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -52,18 +53,19 @@ public class AlphavantageService implements StockQuotesService {
 
   @Override
   public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to)
-      throws JsonProcessingException {
+      throws JsonProcessingException, StockQuoteServiceException {
         String url = buildUri(symbol, from, to);
+        List<Candle> stocks = new ArrayList<>();
+
+        try {
         String apiResponse = restTemplate.getForObject(url, String.class);
-        System.out.println(apiResponse);
+        //System.out.println(apiResponse);
 
         ObjectMapper objectMapper = getObjectMapper();
 
         Map<LocalDate, AlphavantageCandle> dailyResponse = objectMapper.readValue(apiResponse,
                                                                AlphavantageDailyResponse.class).getCandles();
         
-        List<Candle> stocks = new ArrayList<>();
-
         for (LocalDate date = from; !date.isAfter(to) ; date = date.plusDays(1)) {
             AlphavantageCandle candle = dailyResponse.get(date);
 
@@ -72,6 +74,9 @@ public class AlphavantageService implements StockQuotesService {
               stocks.add(candle);
             }
         }
+       } catch(NullPointerException e) {
+            throw new StockQuoteServiceException("Alphavantage returned Invalid Response ", e);
+       }
 
         return stocks;
   }

@@ -58,12 +58,6 @@ public class PortfolioManagerApplication {
     return jsonToObject;
   }
 
-  private static void printJsonObject(Object object) throws IOException {
-    Logger logger = Logger.getLogger(PortfolioManagerApplication.class.getCanonicalName());
-    ObjectMapper mapper = new ObjectMapper();
-    logger.info(mapper.writeValueAsString(object));
-  }
-
   private static File resolveFileFromResources(String filename) throws URISyntaxException {
     return Paths.get(
         Thread.currentThread().getContextClassLoader().getResource(filename).toURI()).toFile();
@@ -238,10 +232,12 @@ public class PortfolioManagerApplication {
   }
 
 
+
+
+
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
-
   }
 }
 

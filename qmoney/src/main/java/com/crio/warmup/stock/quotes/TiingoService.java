@@ -3,6 +3,7 @@ package com.crio.warmup.stock.quotes;
 
 import com.crio.warmup.stock.dto.Candle;
 import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.exception.StockQuoteServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -23,13 +24,14 @@ public class TiingoService implements StockQuotesService {
 
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Implement getStockQuote method below that was also declared in the interface.
-  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException {
+  public List<Candle> getStockQuote(String symbol, LocalDate from, LocalDate to) throws JsonProcessingException, StockQuoteServiceException {
         List<Candle> result = new ArrayList<>();
         if (from.compareTo(to) >= 0) {
             throw new RuntimeException();
         }
         String uri = buildUri(symbol, from, to);
 
+        try {
         String stock = restTemplate.getForObject(uri, String.class);
         ObjectMapper objectMapper = getObjectMapper();
 
@@ -40,6 +42,9 @@ public class TiingoService implements StockQuotesService {
         } else {
             result = Arrays.asList(new TiingoCandle[0]);
         }
+      } catch(NullPointerException e) {
+          throw new StockQuoteServiceException("Invalid response from Tiingo service", e);
+      }
 
         return result;
   }
@@ -62,5 +67,21 @@ public class TiingoService implements StockQuotesService {
   }
   // TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
   //  Write a method to create appropriate url to call the Tiingo API.
+
+
+
+
+
+  // TODO: CRIO_TASK_MODULE_EXCEPTIONS
+  //  1. Update the method signature to match the signature change in the interface.
+  //     Start throwing new StockQuoteServiceException when you get some invalid response from
+  //     Tiingo, or if Tiingo returns empty results for whatever reason, or you encounter
+  //     a runtime exception during Json parsing.
+  //  2. Make sure that the exception propagates all the way from
+  //     PortfolioManager#calculateAnnualisedReturns so that the external user's of our API
+  //     are able to explicitly handle this exception upfront.
+
+  //CHECKSTYLE:OFF
+
 
 }

@@ -4,10 +4,6 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-// TODO: CRIO_TASK_MODULE_ADDITIONAL_REFACTOR
-//  Implement the Candle interface in such a way that it matches the parameters returned
-//  inside Json response from Alphavantage service.
-
   //Reference - https:www.baeldung.com/jackson-ignore-properties-on-serialization
   //Reference - https:www.baeldung.com/jackson-name-of-property
   
